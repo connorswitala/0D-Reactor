@@ -10,6 +10,8 @@ int main() {
 
     rxns = read_rates(park90);
 
+    std::cout << "DONE" << std::endl;
+
 
     return 0;
 

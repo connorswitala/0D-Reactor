@@ -20,7 +20,7 @@
     5
     </number>
 
-    <reaction id="1" ionized="false">
+    <reaction id="0" ionized="false">
 
         <equation>
         O2 + M = O + O + M
@@ -36,20 +36,17 @@
 
         <rate>
             <C units="m^3/(mol-sec)">2.0e15</C>
-            <T1 units="K">Ta</T1>
-            <T2 units="K">Ta</T2>
+            <T>Ta</T>
             <N>-1.5</N>
             <Ea>59500.0</Ea>
         </rate>
 
         <third-body>
-            <efficiencies>
-                <eff sp="O2">1.0</eff>
-                <eff sp="NO">1.0</eff>
-                <eff sp="N2">1.0</eff>
-                <eff sp="O">5.0</eff>
-                <eff sp="N">5.0</eff>
-            </efficiencies>                    
+            <eff sp="O2" efficiency="1.0"/>
+            <eff sp="NO" efficiency="1.0"/>
+            <eff sp="N2" efficiency="1.0"/>
+            <eff sp="O" efficiency="5.0"/>
+            <eff sp="N" efficiency="5.0"/>                   
         </third-body>
 
         <equilibrium>
@@ -105,7 +102,7 @@
         </equilibrium>
     </reaction>
 
-    <reaction id="2" ionized="false">
+    <reaction id="1" ionized="false">
 
         <equation>
         NO + M = N + O + M
@@ -122,8 +119,7 @@
 
         <rate>
             <C units="m^3/(mol-sec)">5.0e9</C>
-            <T1>0</T1>
-            <T2>Ta</T2>
+            <T>Ta</T>
             <N>0</N>
             <Ea>75500.0</Ea>
         </rate>
@@ -193,7 +189,7 @@
 
     </reaction>
 
-    <reaction id="3" ionized="false">
+    <reaction id="2" ionized="false">
 
         <equation>
         N2 + M = N + N + M
@@ -209,8 +205,7 @@
 
         <rate>
             <C units="m^3/(mol-sec)">7.0e15</C>
-            <T1>Ta</T1>
-            <T2>Ta</T2>
+            <T>Ta</T>
             <N>-1.6</N>
             <Ea>113200.0</Ea>
         </rate>
@@ -279,7 +274,7 @@
         </equilibrium>
     </reaction>
 
-    <reaction id="4" ionized="false">
+    <reaction id="3" ionized="false">
 
         <equation>
         N2 + O = NO + N 
@@ -297,8 +292,7 @@
 
         <rate>
             <C units="m^3/(mol-sec)">6.4e11</C>
-            <T1>Ta</T1>
-            <T2>Ta</T2>
+            <T>Ta</T>
             <N>-1.0</N>
             <Ea>38400.0</Ea>
         </rate>
@@ -358,7 +352,7 @@
 
     </reaction>
 
-    <reaction id="5" ionized="false">
+    <reaction id="4" ionized="false">
 
         <equation>
         NO + O = O2 + N 
@@ -376,8 +370,7 @@
 
         <rate>
             <C units="m^3/(mol-sec)">8.4e6</C>
-            <T1>0</T1>
-            <T2>Ta</T2>
+            <T>Ta</T>
             <N>0</N>
             <Ea>19400.0</Ea>
         </rate>
