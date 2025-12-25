@@ -5,215 +5,105 @@
 #include "XMLreader.h"
 
 struct Species {
-    std::string name;
-    double mw;
+    std::string name;                       // Species name
+    double mw;                              // Species molecular weight
 };
 
 struct Reaction{
-    std::vector<double> Keq_coeff;          // Coefficients for K_eq
-    bool third_body;                 // Third-body reaction boolean
-    std::vector<double> efficiencies;       // Efficiencies for 3rd body
+    bool third_body;                        // Third-body reaction boolean
+    bool ionized;                           // Ionized reaction boolean
+
     double eta;                             // Temperature
     double C;                               // Leading coefficient
     double Ea;                              // Activation energy
     double N;                               // Temperature exponent
     std::string temp;                       // Reaction temperature
+
     int id;                                 // Reaction ID
+    std::string equation;                   // Equation 
+
     std::vector<std::string> reactants;     // Reactants in reaction
     std::vector<std::string> products;      // Products in reaction
-    std::string equation;
-    bool ionized;
+    std::vector<double> efficiencies;       // Efficiencies for 3rd body
+    std::vector<double> Keq_As;             // Equilibrium constant coefficients
+
+    std::vector<double> Ns;
+    int nd_levels;
+    
+    double Er;                              // Energy of reaction
+    
 };
 
 struct ReactionSet{
-    std::vector<Species> species;
-    std::vector<Reaction> reactions;
-    std::vector<int> nus_f;
-    std::vector<int> nus_b;
-    int n_reactions;
-    int n_species;
+    std::vector<Species> species;           // List of species in reaction set
+    std::vector<Reaction> reactions;        // List of reactions
+    std::vector<int> nus_f;                 // Total forward reaction stoichiometric set
+    std::vector<int> nus_b;                 // Total backward reaction stoichiometric set
+    int n_reactions;                        // Number of reactions
+    int n_species;                          // Number of species
 };
 
 
-ReactionSet read_rates(std::string& filename) {
+void compute_rates(double* rates, 
+    ReactionSet RS, 
+    double* X, 
+    double* Ts, 
+    double& P) {
 
-    ReactionSet RS;
+    // Ts[0] = T_tr;
+    // Ts[1] = T_v;
+    // Ts[2] = T_e;
 
-    try {
-        std::string xml = read_file(filename);
-        xmlNode root = parse_document(xml);
+    for (const auto& r : RS.reactions) {
 
-        // Find root name
-        if (root.name != "chemistry")
-            throw std::runtime_error("-- Expected <chemistry> root");
+        double T, gamma, n;
 
-        std::string version = require_attr(root, "version");
-        std::cout << "-- Chemistry version = " << version << "\n";
-        
+        if (r.temp == "Ta") {
 
-        // Find species set
-        const xmlNode& ss = require_child(root, "species_set");
+            T = sqrt(Ts[0] * Ts[1]);
+            double R = 0.0;
 
-        for (const auto& ch : ss.children) {
-       
-            if (ch.name != "species") 
-                continue;
-
-            Species sp;
-            sp.name = require_attr(ch, "name");
-            sp.mw = to_double(require_attr(ch, "MW")); 
-
-            RS.species.push_back(std::move(sp));
-        }
-
-        RS.n_species = RS.species.size();
-
-        std::cout << "-- Species count = " << RS.n_species << "\n";
-        std::cout << "-- Molecular weights: " << "\n";
-
-        // Print species and molecular weights
-        for (auto& s : RS.species) 
-            std::cout << "\t" << s.name << " = " << s.mw << "\n";
-
-        // Enter <reactions>
-        const xmlNode& rxns = require_child(root, "reactions");
-
-        // Read how many reactions there are
-        if (const xmlNode* num = rxns.child("number")) {
-            RS.n_reactions = to_int(num->text);
-            std::cout << "-- Number of reactions = " << RS.n_reactions << "\n";
-        } else {
-            throw std::runtime_error("Missing <number> under reactions");
-        }
-
-        // Allocate sized for stoichiometric coefficient arrays
-        RS.nus_f = std::vector<int>(RS.n_reactions * RS.n_species, 0);
-        RS.nus_b = std::vector<int>(RS.n_reactions * RS.n_species, 0);
-        
-
-        // Go through <reaction> blocks
-        for (const auto& rnode : rxns.children) {
-
-            if (rnode.name != "reaction") 
-                continue;
-
-            Reaction R;
-            R.id = to_int(require_attr(rnode, "id"));
-            R.ionized = to_bool(require_attr(rnode, "ionized"));
-            R.equation = require_child(rnode, "equation").text; 
-
-            const xmlNode& reactants = require_child(rnode, "reactants");
-
-            for (auto& sp : reactants.children) {
-                if (sp.name != "sp")
-                    continue;
-
-                std::string name;
-                double nu;
-
-                name = require_attr(sp, "name");
-                nu = to_int(require_attr(sp, "nu"));
-                
-                for (int i = 0; i < RS.n_species; ++i) {
-                    if (RS.species[i].name == name) 
-                        RS.nus_f[RS.n_species * R.id + i] = nu;
-                }
-            }
-
-            const xmlNode& products = require_child(rnode, "products");
-
-            for (auto& sp : products.children) {
-                if (sp.name != "sp")
-                    continue;
-
-                std::string name;
-                int nu;
-
-                name = require_attr(sp, "name");
-                nu = to_int(require_attr(sp, "nu"));
-                
-                for (int i = 0; i < RS.n_species; ++i) {
-                    if (RS.species[i].name == name) {
-                        RS.nus_b[RS.n_species * R.id + i] = nu;
-                        break;
-                    }
-                }
-            }
-
-            const xmlNode& rate = require_child(rnode, "rate");
-
-            // <C units="...">2.0e15</C>
-            const xmlNode& Cnode = require_child(rate, "C");
-
-            std::string C_units = require_attr(Cnode, "units");
-            if (C_units != "m^3/(mol-sec)")
-                throw std::runtime_error("Invalid units for C: " + C_units);
-
-            R.C  = to_double(Cnode.text);
-
-            // <T>Ta</T>
-            R.temp = require_child(rate, "T").text;   // string "Ta"
-
-            // <N>-1.5</N>
-            R.N  = to_double(require_child(rate, "N").text);
-
-            // <Ea>59500.0</Ea>
-            R.Ea = to_double(require_child(rate, "Ea").text);
-
-            if (const xmlNode* third = rnode.child("third-body")) {
-                // third-body exists → parse it
-
-                for (const auto& e : third->children) {
-                    if (e.name != "eff") 
-                        continue;
-
-                    std::string sp = require_attr(e, "sp");
-                    double val = to_double(require_attr(e, "efficiency"));
-                    
-                    for (int i = 0; i < RS.n_species; ++i) {
-                        if (RS.species[i].name == sp) {
-                            R.efficiencies[i] = val;                            
-                        }
-                    }
-                }
-
-                R.third_body = true;
-            } else {
-                // no third-body block → bimolecular reaction
-                R.third_body = false;
-            }
-
-            RS.reactions.push_back(std::move(R));
-        }
-
-        for (auto& r : RS.reactions)  {
-            std::cout << "Reaction " << r.id << "\t Equation = " << r.equation << ": \n";
-            std::cout << "Reactants: ";
-            for (int i = 0; i < RS.n_species; ++i) {
-                std::cout << RS.species[i].name << " has nu = " << RS.nus_f[RS.n_species * r.id + i] << ", ";
-            }
-            std::cout << "\nProducts: ";
-            for (int i = 0; i < RS.n_species; ++i) {
-                std::cout << RS.species[i].name << " has nu = " << RS.nus_b[RS.n_species * r.id + i] << ", ";
-            }
             if (r.third_body) {
-                std::cout << "\nThird-body efficiencies: ";
-                for (int i = 0; i < RS.n_species; ++i) {
-                    std::cout << RS.species[i].name << " has efficiency = " << r.efficiencies[i] << ", ";
+                gamma = r.C * pow(T, r.N) * exp(-r.Ea/(bk * T));
+                n = P/(bk * Ts[0]);
+                
+                for (int i; i < RS.n_species; ++i) {
+                    
+
+
                 }
+
+
+
             }
-            std::cout << "\nC = " << r.C << ", T = " << r.temp << ", Ea = " << r.Ea << ", N = " << r.N;
-            std::cout << "\n\n";
+            else {
+
+            }
+
+
+        } 
+        else if (r.temp == "T") {
+
+        }
+        else if (r.temp == "Te") {
+
+
         }
 
 
-    } 
-    catch (const std::exception& e) {
-        std::cerr << "Parse error: " << e.what() << "\n";
+
+
+
+
     }
 
-    return RS;
+
+
+
 }
+
+
+
 
 
 #endif

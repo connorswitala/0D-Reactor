@@ -1,6 +1,4 @@
-#include "chemistry.h"
-
-#include <iostream>
+#include "reader.h"
 
 int main() {
 
