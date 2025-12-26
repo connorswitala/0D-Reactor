@@ -2,8 +2,7 @@
 #define READER_H
 
 #include "XMLreader.h"
-#include "common.h"
-#include "chemistry.h"
+#include "dataStructures.h"
 
 
 static void hr(char ch='-', int w=100) {
@@ -238,6 +237,7 @@ ReactionSet read_rates(std::string& filename) {
                 continue;
 
             Reaction R;
+            R.dXdt = std::vector<double>(RS.n_species);
 
             /**
              * Read in reaction id, ionization, equation
@@ -263,8 +263,10 @@ ReactionSet read_rates(std::string& filename) {
                 nu = to_int(require_attr(sp, "nu"));
                 
                 for (int i = 0; i < RS.n_species; ++i) {
-                    if (RS.species[i].name == name) 
+                    if (RS.species[i].name == name) {
                         RS.nus_f[RS.n_species * R.id + i] = nu;
+                        break;
+                    }
                 }
             }
 
@@ -359,6 +361,9 @@ ReactionSet read_rates(std::string& filename) {
 
             const xmlNode& levels = require_child(eq, "levels");
             R.nd_levels = to_int(levels.text);
+
+            const xmlNode& ncoeffs = require_child(eq, "ncoeffs");
+            R.Keq_N = to_int(ncoeffs.text);
 
             for (auto& f : eq.children) {
                 if (f.name != "fit")

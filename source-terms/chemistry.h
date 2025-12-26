@@ -1,105 +1,125 @@
 #ifndef CHEMISTRY_H
 #define CHEMISTRY_H
 
-#include "common.h"
-#include "XMLreader.h"
+#include "reader.h"
+#include "common_functions.h"
 
-struct Species {
-    std::string name;                       // Species name
-    double mw;                              // Species molecular weight
-};
+int find_nd_level(const std::vector<double>& Ns, double n) {
+    const int N = (int)Ns.size();
+    if (N < 2) return 0;
 
-struct Reaction{
-    bool third_body;                        // Third-body reaction boolean
-    bool ionized;                           // Ionized reaction boolean
+    if (n <= Ns[0]) return 0;
+    if (n >= Ns[N-1]) return N-2;
 
-    double eta;                             // Temperature
-    double C;                               // Leading coefficient
-    double Ea;                              // Activation energy
-    double N;                               // Temperature exponent
-    std::string temp;                       // Reaction temperature
+    // find j with Ns[j] <= n < Ns[j+1]
+    int j = 0;
+    while (j+1 < N && !(Ns[j] <= n && n < Ns[j+1])) ++j;
+    if (j > N-2) j = N-2;
+    return j;
+}
 
-    int id;                                 // Reaction ID
-    std::string equation;                   // Equation 
 
-    std::vector<std::string> reactants;     // Reactants in reaction
-    std::vector<std::string> products;      // Products in reaction
-    std::vector<double> efficiencies;       // Efficiencies for 3rd body
-    std::vector<double> Keq_As;             // Equilibrium constant coefficients
+void compute_rates(double* rates, // Production rates array
+    ReactionSet& RS, // Reaction set
+    double* rho_s,  // Species densities
+    double* Ts,     // Temperatures
+    double& P)      // Pressure
+    {
 
-    std::vector<double> Ns;
-    int nd_levels;
+    // Molar concentration array
+    std::vector<double> C(RS.n_species);
+
+    // Compute concentrations
+    for (int i = 0; i < RS.n_species; ++i) 
+        C[i] = rho_s[i] / (RS.species[i].mw); 
     
-    double Er;                              // Energy of reaction
-    
-};
-
-struct ReactionSet{
-    std::vector<Species> species;           // List of species in reaction set
-    std::vector<Reaction> reactions;        // List of reactions
-    std::vector<int> nus_f;                 // Total forward reaction stoichiometric set
-    std::vector<int> nus_b;                 // Total backward reaction stoichiometric set
-    int n_reactions;                        // Number of reactions
-    int n_species;                          // Number of species
-};
-
-
-void compute_rates(double* rates, 
-    ReactionSet RS, 
-    double* X, 
-    double* Ts, 
-    double& P) {
 
     // Ts[0] = T_tr;
     // Ts[1] = T_v;
     // Ts[2] = T_e;
 
-    for (const auto& r : RS.reactions) {
+    for (auto& r : RS.reactions) {
 
         double T, gamma, n;
 
+        std::vector<double> A(r.Keq_N);
+        n = P/(bk * Ts[0] * 1e6); // Compute number density !NEEDS CHANGE
+        int level = find_nd_level(r.Ns, n); // Find number density level
+ 
+        // Find Keq coefficients by linear interpolation
+        for (int i = 0; i < r.Keq_N; ++i) {
+            A[i] = lerp(r.Keq_As[level * r.Keq_N + i], 
+                r.Ns[level], 
+                r.Keq_As[(level + 1) * r.Keq_N + i], 
+                r.Ns[level + 1], 
+                n);
+        }
+
+        double exp_term = A[0] * (Ts[0] / 10000.0)
+                            + A[1]
+                            + A[2] * log(10000.0 / Ts[0])
+                            + A[3] * (10000.0 / Ts[0])
+                            + A[4] * (10000.0 * 10000.0) / (Ts[0] * Ts[0]);
+        double Keq = exp(exp_term);
+
+
+        // Define temperature based on reaction specification
         if (r.temp == "Ta") {
-
             T = sqrt(Ts[0] * Ts[1]);
-            double R = 0.0;
-
-            if (r.third_body) {
-                gamma = r.C * pow(T, r.N) * exp(-r.Ea/(bk * T));
-                n = P/(bk * Ts[0]);
-                
-                for (int i; i < RS.n_species; ++i) {
-                    
-
-
-                }
-
-
-
-            }
-            else {
-
-            }
-
-
         } 
         else if (r.temp == "T") {
-
+            T = Ts[0];
         }
         else if (r.temp == "Te") {
-
-
+            T = Ts[2];
         }
 
+        double R, f = 1.0, b = 1.0, nu;
 
+        gamma = r.C * pow(T, r.N) * exp(-r.Ea/(T));
+            
+        for (int i = 0; i < RS.n_species; ++i) {
+            nu = RS.nus_f[RS.n_species * r.id + i];
+            if (nu == 0)
+                continue;
+            f *= pow(C[i], nu);
+        }
 
+        for (int i = 0; i < RS.n_species; ++i) {
+            nu = RS.nus_b[RS.n_species * r.id + i];
+            if (nu == 0)
+                continue;
+            b *= pow(C[i], nu);
+        }
 
+        if (r.third_body) {
 
+            double M_eff = 0.0;
+            for (int i = 0; i < RS.n_species; ++i) {
+                M_eff += C[i] * r.efficiencies[i];
+            }
 
+            R = gamma * M_eff * (f - b / Keq);
+
+        }
+        else {
+            R = gamma * (f - b / Keq);
+        }
+
+        for (int i = 0; i < RS.n_species; ++i) {
+            int nu_f = RS.nus_f[RS.n_species * r.id + i];
+            int nu_b = RS.nus_b[RS.n_species * r.id + i];
+
+            r.dXdt[i] = R * (nu_b - nu_f);
+        }
     }
 
-
-
-
+    for (int i = 0; i < RS.n_species; ++i) {
+        rates[i] = 0.0;
+        for (auto& r : RS.reactions) {
+            rates[i] += RS.species[i].mw * 1000 * r.dXdt[i];
+        }
+    }
 }
 
 
