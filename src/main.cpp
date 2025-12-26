@@ -11,8 +11,8 @@ int main() {
 
     std::vector<double> rates(rxns.n_species, 0.0);
     std::vector<double> rho_s(rxns.n_species, 0.0);
-    double Ts[3] = {2000.0, 2000.0, 2000.0};   // T_tr, T_v, T_e
-    double P = 101325.0; // Pressure in Pa
+    double Ts[3] = {2500.0, 2500.0, 2500.0};   // T_tr, T_v, T_e
+    double P = 345.1623; // Pressure in Pa
     // Initialize species densities (kg/m^3)
     
     for (int i = 0; i < rxns.n_species; ++i) {
