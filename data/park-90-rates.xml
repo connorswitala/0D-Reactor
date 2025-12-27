@@ -6,14 +6,6 @@
     <rate_constant>SI</rate_constant>
   </units>
 
-  <species_set>
-    <species name="N2" MW="28.013400"/>
-    <species name="N" MW="14.006700"/>
-    <species name="O2" MW="31.998800"/>
-    <species name="O" MW="15.999400"/>
-    <species name="NO" MW="30.006100"/>
-  </species_set>
-
   <reactions>
 
     <number>

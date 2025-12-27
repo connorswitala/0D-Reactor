@@ -1,0 +1,36 @@
+<species_data version="1.0">         
+    <species>
+        <name>N2</name>
+        <MW>28.013400</MW>
+        <vibc1>2358.57</vibc1> 
+        <hf>0.0</hf>
+    </species>
+
+    <species>
+        <name>N</name>
+        <MW>14.006700</MW>
+        <vibc1>0.0</vibc1>
+        <hf>472680000.0</hf>
+    </species>
+
+    <species>
+        <name>O2</name>
+        <MW>31.998800</MW>
+        <vibc1>1580.19</vibc1>
+        <hf>0.0</hf>
+    </species>
+
+    <species>
+        <name>O</name>
+        <MW>15.999400</MW>
+        <vibc1>0.0</vibc1>
+        <hf>249175003.0</hf>
+    </species>
+
+    <species>
+        <name>NO</name>
+        <MW>30.006100</MW>
+        <vibc1>1904.2</vibc1>
+        <hf>91271310.0</hf>
+    </species>
+</species_data>

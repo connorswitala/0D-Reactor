@@ -53,13 +53,17 @@ void print_reaction_set_pretty(const ReactionSet& RS) {
 
     // Optional: print species table
     {
-        std::cout << "Species (name, MW):\n";
+        std::cout << "Species (name, MW, theta_v, hf):\n";
         hr('-', W);
         for (int i = 0; i < RS.n_species; ++i) {
             std::cout << "  " << std::left << std::setw(6) << i
                       << std::left << std::setw(col_sp) << RS.species[i].name
-                      << "MW=" << std::right << std::setw(10) << std::fixed << std::setprecision(6)
-                      << RS.species[i].mw << "\n";
+                      << "MW= " << std::right << std::setw(10) << std::fixed << std::setprecision(6)
+                      << RS.species[i].mw 
+                      << "  theta_v= " << std::right << std::setw(10) << std::fixed << std::setprecision(4)
+                      << RS.species[i].theta_v 
+                      << "  hf= " << std::right << std::setw(10) << std::fixed << std::setprecision(4)
+                      << RS.species[i].hf << "\n";
         }
         hr('-', W);
         std::cout << "\n";
@@ -174,9 +178,61 @@ void print_reaction_set_pretty(const ReactionSet& RS) {
     std::cout << std::flush;
 }
 
-ReactionSet read_rates(std::string& filename) {
+void read_species_data(std::string& filename, ReactionSet& RS) {
 
-    ReactionSet RS;
+    Species sp;
+
+    try{ 
+        std::string xml = read_file(filename);
+        xmlNode root = parse_document(xml);
+
+        // Find root name   
+        if (root.name != "species_data")
+            throw std::runtime_error("-- Expected <species_data> root");
+
+        std::string version = require_attr(root, "version");
+        std::cout << "-- Species data version = " << version << "\n";
+
+        int n_species = 0;
+
+        // Enter <species> blocks
+        for (const auto& ch : root.children) {
+       
+            if (ch.name != "species") 
+                continue;
+
+            n_species++;
+
+            double vibc1;
+
+            sp.name = require_child(ch, "name").text;
+            sp.mw = to_double(require_child(ch, "MW").text); 
+            vibc1 = to_double(require_child(ch, "vibc1").text);
+
+            if (vibc1 > 0.0) {
+                sp.theta_v = vibc1 * planck * light_speed / boltzmann * 100.0; // convert to K
+                sp.mol = true;
+            }
+            else {
+                sp.theta_v = 0.0;
+                sp.mol = false;
+            }
+
+            sp.hf = to_double(require_child(ch, "hf").text);
+
+            // Add to species list
+            RS.species.push_back(std::move(sp));
+        }
+
+        RS.n_species = n_species;
+
+    }
+    catch (const std::exception& e) {
+        throw std::runtime_error("Error reading species file '" + filename + "': " + e.what());
+    }
+}
+
+void read_rates(std::string& filename, ReactionSet& RS) {
 
     try {
         std::string xml = read_file(filename);
@@ -188,31 +244,6 @@ ReactionSet read_rates(std::string& filename) {
 
         std::string version = require_attr(root, "version");
         std::cout << "-- Chemistry version = " << version << "\n";
-        
-
-        // Find species set
-        const xmlNode& ss = require_child(root, "species_set");
-
-        for (const auto& ch : ss.children) {
-       
-            if (ch.name != "species") 
-                continue;
-
-            Species sp;
-            sp.name = require_attr(ch, "name");
-            sp.mw = to_double(require_attr(ch, "MW")); 
-
-            RS.species.push_back(std::move(sp));
-        }
-
-        RS.n_species = RS.species.size();
-
-        std::cout << "-- Species count = " << RS.n_species << "\n";
-        std::cout << "-- Molecular weights: " << "\n";
-
-        // Print species and molecular weights
-        for (auto& s : RS.species) 
-            std::cout << "\t" << s.name << " = " << s.mw << "\n";
 
         // Enter <reactions>
         const xmlNode& rxns = require_child(root, "reactions");
@@ -394,8 +425,6 @@ ReactionSet read_rates(std::string& filename) {
     catch (const std::exception& e) {
         std::cerr << "Parse error: " << e.what() << "\n";
     }
-
-    return RS;
 }
 
 #endif

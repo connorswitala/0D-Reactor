@@ -43,7 +43,7 @@ void compute_rates(double* rates, // Production rates array
         double T, gamma, n;
 
         std::vector<double> A(r.Keq_N);
-        n = P/(bk * Ts[0] * 1e6); // Compute number density !NEEDS CHANGE
+        n = P/(boltzmann * Ts[0] * 1e6); // Compute number density !NEEDS CHANGE
         int level = find_nd_level(r.Ns, n); // Find number density level
  
         // Find Keq coefficients by linear interpolation
@@ -113,7 +113,6 @@ void compute_rates(double* rates, // Production rates array
             int nu_b = RS.nus_b[RS.n_species * r.id + i];
 
             r.dXdt[i] = R * (nu_b - nu_f);
-            std::cout << RS.species[i].name << " dXdt = " << r.dXdt[i] << "\t";
         }
         std::cout << std::endl;
     }
