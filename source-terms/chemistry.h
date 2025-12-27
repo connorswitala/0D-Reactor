@@ -106,7 +106,7 @@ void compute_rates(double* rates, // Production rates array
             R = gamma * (f - b / Keq);
         }
 
-        std::cout << r.equation << ": ";
+    
 
         for (int i = 0; i < RS.n_species; ++i) {
             int nu_f = RS.nus_f[RS.n_species * r.id + i];
@@ -114,7 +114,6 @@ void compute_rates(double* rates, // Production rates array
 
             r.dXdt[i] = R * (nu_b - nu_f);
         }
-        std::cout << std::endl;
     }
 
     for (int i = 0; i < RS.n_species; ++i) {
