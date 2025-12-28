@@ -52,7 +52,8 @@ void find_Ts(double* Ts,
         double dEv_dT   = 0.0;   // J/(m^3 K)
 
         for (int i = 0; i < RS.n_species; ++i) {
-            if (!RS.species[i].mol) continue; // atoms: no vibrational energy in this model
+            if (!RS.species[i].mol) 
+                continue; // atoms: no vibrational energy in this model
 
             const double theta = RS.theta_vs[i];   // K
             const double Ri    = RS.Rs[i];         // J/(kg K)
@@ -116,7 +117,8 @@ void landau_teller(double& Q,
                    const double* Ts,
                    const double* rho_s,
                    const std::vector<double>& Ys,
-                   double p_Pa) {
+                   const std::vector<double>& Xs,
+                   const double p_Pa) {
 
     Q = 0.0;
 
@@ -131,71 +133,80 @@ void landau_teller(double& Q,
     mass_to_mole_frac(X.data(), Ys.data(), RS.MWs.data(), RS.n_species);
 
     std::vector<double> tau_sr(RS.n_species * RS.n_species, 0.0);
-    std::vector<double> tau_v (RS.n_species, 1e99);
+    std::vector<double> tau_v (RS.n_species, 0.0);
 
     // constants: make sure these match the correlation + units you want
     double a = std::pow(10.0, -4.5) * 1.16;
     double b = std::pow(10.0, -0.75) * 0.015;
+    double C, sigma, n;
 
     // Build pair relaxation times for molecular relaxers i with ANY collider j
-    for (int i = 0; i < RS.n_species; ++i) {
+    for (int s = 0; s < RS.n_species; ++s) {
 
-        if (!RS.species[i].mol) 
+        if (!RS.species[s].mol) 
             continue;
 
-        for (int j = 0; j < RS.n_species; ++j) {
+        C = std::sqrt(8.0 * RS.Rs[s] * T / pi); // mean thermal speed
+        sigma = 3e-21 * 50000.0 * 50000.0 / (T * T); // collision cross section
 
-            int idx = i * RS.n_species + j;
+        for (int r = 0; r < RS.n_species; ++r) {
 
-            const double mwi = RS.MWs[i]; // confirm units!
-            const double mwj = RS.MWs[j];
+            int idx = s * RS.n_species + r;
 
-            const double c = (mwi * mwj) / (mwi + mwj); // reduced "mass" proxy
+            const double mws = RS.MWs[s]; // confirm units!
+            const double mwr = RS.MWs[r];
 
-            const double A = a * std::sqrt(c) * std::pow(RS.theta_vs[i], -4.0/3.0);
+            const double c = (mws * mwr) / (mws + mwr); // reduced "mass"
+
+            const double A = a * std::sqrt(c) * std::pow(RS.theta_vs[s], 4.0/3.0);
             const double B = b * std::pow(c, 0.25);
 
             // MW-like form (as you coded)
             tau_sr[idx] = (1.0 / p_atm) * std::exp(A * (std::pow(T, -1.0/3.0) - B) - 18.42);
 
-            if (!(tau_sr[idx] > 0.0)) tau_sr[idx] = 1e99;
+            n = p_Pa * X[r] / (boltzmann * T); // number density of collider j
+            tau_sr[idx] += 1.0 / (C * sigma * n);   // Parks correction
         }
     }
 
     // Mixture-averaged tau_v for each molecular species i
-    for (int i = 0; i < RS.n_species; ++i) {
-        if (!RS.species[i].mol) continue;
+    for (int s = 0; s < RS.n_species; ++s) {
+
+        if (!RS.species[s].mol) 
+            continue;
 
         double deno = 0.0;
         double num  = 0.0;
 
-        for (int j = 0; j < RS.n_species; ++j) {
-            const int idx = i * RS.n_species + j;
-            if (tau_sr[idx] <= 0.0 || tau_sr[idx] >= 1e98) continue;
+        for (int r = 0; r < RS.n_species; ++r) {
+            
+            if (!RS.species[r].mol) 
+                continue;            
 
-            deno += X[j] / tau_sr[idx];
-            num  += X[j];
+            int idx = s * RS.n_species + r;            
+
+            deno += X[r] / tau_sr[idx];
+            num  += X[r];
         }
 
-        if (deno > 0.0) tau_v[i] = num / deno;
-        else            tau_v[i] = 1e99;
+        tau_v[s] = num / deno;
     }
 
     // Q_VT = sum rho_i (e_v*(T) - e_v(Tv)) / tau_v,i
     for (int i = 0; i < RS.n_species; ++i) {
-        if (!RS.species[i].mol) continue;
-        if (tau_v[i] >= 1e98)   continue;
+
+        if (!RS.species[i].mol) 
+            continue;
 
         auto ev_sho = [&](double TT){
             double x = RS.theta_vs[i] / TT;
-            x = std::min(x, 700.0);
             return RS.Rs[i] * RS.theta_vs[i] / (std::exp(x) - 1.0); // J/kg
         };
 
         const double ev   = ev_sho(Tv);
         const double eveq = ev_sho(T);
 
-        Q += rho_s[i] * (eveq - ev) / tau_v[i];  // W/m^3
+        Q += rho_s[i] * (eveq - ev) / tau_v[i];
     }
 }
 

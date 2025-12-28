@@ -74,6 +74,7 @@ int main() {
     for (int i = 0; i < rxns.n_species; ++i) {
         rho_s[i] = Ys[i] * rho;
     }
+    mass_to_mole_frac(Xs.data(), Ys.data(), rxns.MWs.data(), rxns.n_species);
 
     // Precompute species specific gas constants and energies of formation
     for (int i = 0; i < rxns.n_species; ++i) {
@@ -98,7 +99,7 @@ int main() {
         find_Ts(Ts, rxns, E, Ev, rho_s.data(), rho);
         compute_pressure(P, rho, R_mix, Ts[0]);
         compute_rates(rates.data(), rxns, rho_s.data(), Ts, P);        
-        landau_teller(Q, rxns, Ts, rho_s.data(), Ys, P);
+        landau_teller(Q, rxns, Ts, rho_s.data(), Ys, Xs, P);
 
         for (int i = 0; i < rxns.n_species; ++i) {
             rho_s[i] += rates[i] * dt;
