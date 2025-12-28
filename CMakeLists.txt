@@ -13,5 +13,4 @@ add_executable(reactor
 target_include_directories(reactor
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/headers
-        ${CMAKE_CURRENT_SOURCE_DIR}/source-terms
 )

@@ -59,9 +59,9 @@ void print_reaction_set_pretty(const ReactionSet& RS) {
             std::cout << "  " << std::left << std::setw(6) << i
                       << std::left << std::setw(col_sp) << RS.species[i].name
                       << "MW= " << std::right << std::setw(10) << std::fixed << std::setprecision(6)
-                      << RS.species[i].mw 
+                      << RS.MWs[i]
                       << "  theta_v= " << std::right << std::setw(10) << std::fixed << std::setprecision(4)
-                      << RS.species[i].theta_v 
+                      << RS.theta_vs[i]
                       << "  hf= " << std::right << std::setw(10) << std::fixed << std::setprecision(4)
                       << RS.species[i].hf << "\n";
         }
@@ -182,11 +182,11 @@ void read_species_data(std::string& filename, ReactionSet& RS) {
 
     Species sp;
 
-    try{ 
+    try{
         std::string xml = read_file(filename);
         xmlNode root = parse_document(xml);
 
-        // Find root name   
+        // Find root name
         if (root.name != "species_data")
             throw std::runtime_error("-- Expected <species_data> root");
 
@@ -194,11 +194,13 @@ void read_species_data(std::string& filename, ReactionSet& RS) {
         std::cout << "-- Species data version = " << version << "\n";
 
         int n_species = 0;
+        double mw;
+        double theta_v;
 
         // Enter <species> blocks
         for (const auto& ch : root.children) {
-       
-            if (ch.name != "species") 
+
+            if (ch.name != "species")
                 continue;
 
             n_species++;
@@ -206,15 +208,15 @@ void read_species_data(std::string& filename, ReactionSet& RS) {
             double vibc1;
 
             sp.name = require_child(ch, "name").text;
-            sp.mw = to_double(require_child(ch, "MW").text); 
+            mw = to_double(require_child(ch, "MW").text);
             vibc1 = to_double(require_child(ch, "vibc1").text);
 
             if (vibc1 > 0.0) {
-                sp.theta_v = vibc1 * planck * light_speed / boltzmann * 100.0; // convert to K
+                theta_v = vibc1 * planck * light_speed / boltzmann * 100.0; // convert to K
                 sp.mol = true;
             }
             else {
-                sp.theta_v = 0.0;
+                theta_v = 0.0;
                 sp.mol = false;
             }
 
@@ -222,10 +224,14 @@ void read_species_data(std::string& filename, ReactionSet& RS) {
 
             // Add to species list
             RS.species.push_back(std::move(sp));
+            RS.MWs.push_back(mw);
+            RS.theta_vs.push_back(theta_v);
         }
 
         RS.n_species = n_species;
-
+        RS.MWs.resize(RS.n_species);
+        RS.theta_vs.resize(RS.n_species);
+        RS.Rs.resize(RS.n_species); 
     }
     catch (const std::exception& e) {
         throw std::runtime_error("Error reading species file '" + filename + "': " + e.what());
@@ -259,28 +265,24 @@ void read_rates(std::string& filename, ReactionSet& RS) {
         // Allocate sized for stoichiometric coefficient arrays
         RS.nus_f = std::vector<int>(RS.n_reactions * RS.n_species, 0);
         RS.nus_b = std::vector<int>(RS.n_reactions * RS.n_species, 0);
-        
+
 
         // Go through <reaction> blocks
         for (const auto& rnode : rxns.children) {
 
-            if (rnode.name != "reaction") 
+            if (rnode.name != "reaction")
                 continue;
 
             Reaction R;
             R.dXdt = std::vector<double>(RS.n_species);
 
-            /**
-             * Read in reaction id, ionization, equation
-             */
+            // Read in reaction id, ionization, equation
             R.id = to_int(require_attr(rnode, "id"));
             R.ionized = to_bool(require_attr(rnode, "ionized"));
-            R.equation = require_child(rnode, "equation").text; 
+            R.equation = require_child(rnode, "equation").text;
 
-            /**
-             * Read in reaction reactants and stoichiometry
-             */
-
+            
+            // Read in reaction reactants and stoichiometry      
             const xmlNode& reactants = require_child(rnode, "reactants");
 
             for (auto& sp : reactants.children) {
@@ -292,7 +294,7 @@ void read_rates(std::string& filename, ReactionSet& RS) {
 
                 name = require_attr(sp, "name");
                 nu = to_int(require_attr(sp, "nu"));
-                
+
                 for (int i = 0; i < RS.n_species; ++i) {
                     if (RS.species[i].name == name) {
                         RS.nus_f[RS.n_species * R.id + i] = nu;
@@ -316,7 +318,7 @@ void read_rates(std::string& filename, ReactionSet& RS) {
 
                 name = require_attr(sp, "name");
                 nu = to_int(require_attr(sp, "nu"));
-                
+
                 for (int i = 0; i < RS.n_species; ++i) {
                     if (RS.species[i].name == name) {
                         RS.nus_b[RS.n_species * R.id + i] = nu;
@@ -334,7 +336,7 @@ void read_rates(std::string& filename, ReactionSet& RS) {
             const xmlNode& Cnode = require_child(rate, "C");
 
             std::string C_units = require_attr(Cnode, "units");
-            if (C_units != "m^3/(mol-sec)")
+            if (C_units != "cm^3/(mol-sec)")
                 throw std::runtime_error("Invalid units for C: " + C_units);
 
             R.C  = to_double(Cnode.text);
@@ -358,15 +360,15 @@ void read_rates(std::string& filename, ReactionSet& RS) {
                 // third-body exists → parse it
 
                 for (const auto& e : third->children) {
-                    if (e.name != "eff") 
+                    if (e.name != "eff")
                         continue;
 
                     std::string sp = require_attr(e, "sp");
                     double val = to_double(require_attr(e, "efficiency"));
-                    
+
                     for (int i = 0; i < RS.n_species; ++i) {
                         if (RS.species[i].name == sp) {
-                            R.efficiencies[i] = val;                            
+                            R.efficiencies[i] = val;
                         }
                     }
                 }
@@ -387,7 +389,7 @@ void read_rates(std::string& filename, ReactionSet& RS) {
             std::string units = require_attr(Er, "units");
             if (units != "J/mol")
                 throw std::runtime_error("Incorrect units for energy of reaction: " + units);
-            
+
             R.Er = to_double(Er.text);
 
             const xmlNode& levels = require_child(eq, "levels");
@@ -405,23 +407,15 @@ void read_rates(std::string& filename, ReactionSet& RS) {
                 R.Keq_As.push_back(to_double(require_child(f, "A2").text));
                 R.Keq_As.push_back(to_double(require_child(f, "A3").text));
                 R.Keq_As.push_back(to_double(require_child(f, "A4").text));
-                R.Keq_As.push_back(to_double(require_child(f, "A5").text));          
+                R.Keq_As.push_back(to_double(require_child(f, "A5").text));
 
-                
+
             }
 
 
             RS.reactions.push_back(std::move(R));
         }
-
-
-        // Print results
-        print_reaction_set_pretty(RS);
-
-        
-
-
-    } 
+    }
     catch (const std::exception& e) {
         std::cerr << "Parse error: " << e.what() << "\n";
     }

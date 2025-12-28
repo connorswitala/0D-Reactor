@@ -5,13 +5,10 @@
 
 struct Species {
     std::string name;           // Name of species
-    double mw;                  // Molecular weight of species
     std::vector<double> lewis;  // NASA polynomial coefficients
     int q;                      // Charge of species
     double hf, ef;              // Enthalpy of formation
     double href;                // Reference enthalpy 
-    double theta_v;             // Characteristic vibrational temperature
-    double R;
     bool mol;                   // Is molecule boolean
 };
 
@@ -50,8 +47,12 @@ struct ReactionSet{
     std::vector<Reaction> reactions;        // List of reactions
     std::vector<int> nus_f;                 // Total forward reaction stoichiometric set
     std::vector<int> nus_b;                 // Total backward reaction stoichiometric setIDs  
+    std::vector<double> MWs;                // Molecular weights of species
+    std::vector<double> Rs;                 // Specific gas constants of species
+    std::vector<double> theta_vs;            // Characteristic vibrational temperatures of species
     int n_reactions;                        // Number of reactions
     int n_species;                          // Number of species
+
 };
 
 
