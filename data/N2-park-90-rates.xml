@@ -1,11 +1,16 @@
 <chemistry version="N2-park-90-rates">
   <reactions>
 
+    <species>
+        <sp name="N2"/>
+        <sp name="N"/>
+    </species>
+
     <number>
     1
     </number>
 
-    <reaction id="2" ionized="false">
+    <reaction id="0" ionized="false">
 
         <equation>
         N2 + M = N + N + M

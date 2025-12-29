@@ -10,7 +10,13 @@ add_executable(reactor
     # More .cpp if necessary    
 )
 
+add_executable(test
+    src/test.cpp
+)
+
 target_include_directories(reactor
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/headers
+        ${CMAKE_CURRENT_SOURCE_DIR}/includes/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/includes/physics
+        ${CMAKE_CURRENT_SOURCE_DIR}/includes/xml
 )

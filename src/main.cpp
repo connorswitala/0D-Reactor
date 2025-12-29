@@ -1,6 +1,6 @@
-#include "reader.h"
-#include "chemistry.h"
-#include "energy.h"
+#include "../includes/xml/reader.h"
+#include "../includes/physics/chemistry.h"
+#include "../includes/physics/energy.h"
 
 
 inline void write_0D_header(
@@ -40,8 +40,7 @@ int main() {
     std::string park90 = "../data/air5-park-90-rates.xml";
     std::string species_data = "../data/species-data.xml";
 
-    read_species_data(species_data, rxns);
-    read_rates(park90, rxns);
+    read_rates(park90, species_data, rxns);
 
     std::vector<double> rates(rxns.n_species, 0.0);
     std::vector<double> rho_s(rxns.n_species, 0.0);
@@ -53,7 +52,7 @@ int main() {
     double P = 20.42 * 101325.0;
     double E;
     double Ev;
-    double rho = 0.0;
+    double rho;
     double R_mix;
     double Q; 
 
@@ -69,6 +68,15 @@ int main() {
             Ys[i] = 0.0; // Arbitrary small density
     }
 
+    // for (int i = 0; i < rxns.n_species; ++i) {
+    //     if (rxns.species[i].name == "O2") 
+    //         Ys[i] = 0.233; // Example density for O2
+    //     else if (rxns.species[i].name == "N2") 
+    //         Ys[i] = 1.0; // Example density for N2
+    //     else
+    //         Ys[i] = 0.0; // Arbitrary small density
+    // }
+
     mixture_gas_constant(R_mix, Ys.data(), rxns.MWs.data(), rxns.n_species);
     rho = P / (R_mix * Ts[0]);
     for (int i = 0; i < rxns.n_species; ++i) {
@@ -79,7 +87,7 @@ int main() {
     // Precompute species specific gas constants and energies of formation
     for (int i = 0; i < rxns.n_species; ++i) {
         rxns.Rs[i] = ugconn / rxns.MWs[i];
-        rxns.species[i].ef = rxns.species[i].hf / rxns.MWs[i] - rxns.Rs[i] * 298.15; // convert to kJ/kg
+        rxns.species[i].ef = rxns.species[i].hf / rxns.MWs[i] - rxns.Rs[i] * 298.15; // convert to J/kg
     }
 
     initialize_energy(E, Ev, rxns, rho_s.data(), Ts);

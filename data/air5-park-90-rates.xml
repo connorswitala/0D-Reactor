@@ -1,6 +1,14 @@
 <chemistry version="5sp-park-90-rates">
   <reactions>
 
+    <species>
+        <sp name="N2"/>
+        <sp name="O2"/>
+        <sp name="NO"/>
+        <sp name="O"/>
+        <sp name="N"/>
+    </species>
+
     <number>
     5
     </number>
