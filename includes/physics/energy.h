@@ -162,11 +162,13 @@ void landau_teller(double& Q,
             const double B = b * std::pow(c, 0.25);
 
             // MW-like form (as you coded)
-            tau_sr[idx] = (1.0 / p_atm) * std::exp(A * (std::pow(T, -1.0/3.0) - B) - 18.42);
+           double tau_mw = (1.0 / p_atm) * std::exp(A * (std::pow(T, -1.0/3.0) - B) - 18.42);
 
             n = p_Pa * X[r] / (boltzmann * T); // number density of collider j
-            tau_sr[idx] += 1.0 / (C * sigma * n);   // Parks correction
-            tau_sr[idx] /= 2.0;
+           double tau_p = 1.0 / (C * sigma * n);   // Parks correction
+
+           tau_sr[idx] = tau_mw + tau_p;
+
         }
     }
 
