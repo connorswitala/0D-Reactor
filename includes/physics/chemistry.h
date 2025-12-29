@@ -49,16 +49,7 @@ void compute_rates(double* rates, // Production rates array
                 n);
         }
 
-        // Define rate-controlling temperature
-        if (r.temp == "Ta") {
-            T = sqrt(Ts[0] * Ts[1]);
-        }
-        else if (r.temp == "Te") {
-            T = Ts[2];
-        }
-        else {
-            T = Ts[0];
-        }
+        T = pow(Ts[0], r.Texp) * pow(Ts[1], (1.0 - r.Texp));
 
         double exp_term = A[0] * (T / 10000.0)
                             + A[1]

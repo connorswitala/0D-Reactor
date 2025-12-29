@@ -37,7 +37,7 @@ plt.grid(which="minor", linestyle="--", alpha=0.4)
 
 plt.legend()
 plt.tight_layout()
-plt.savefig("park_temp.png", dpi=300)
+plt.savefig("park_temp2.png", dpi=300)
 plt.close()
 
 # --------------------
@@ -61,5 +61,5 @@ plt.grid(which="minor", linestyle="--", alpha=0.4)
 
 plt.legend()
 plt.tight_layout()
-plt.savefig("park_species.png", dpi=300)
+plt.savefig("park_species2.png", dpi=300)
 plt.close()

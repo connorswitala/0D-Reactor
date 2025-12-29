@@ -20,7 +20,7 @@ struct Reaction{
     double C;                               // Leading coefficient
     double Ea;                              // Activation energy
     double N;                               // Temperature exponent
-    std::string temp;                       // Reaction temperature
+    double Texp;                       // Reaction temperature
 
     int id;                                 // Reaction ID
     std::string equation;                   // Equation 

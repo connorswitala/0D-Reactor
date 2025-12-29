@@ -29,7 +29,7 @@
 
         <rate>
             <C units="cm^3/(mol-sec)">2.0e21</C>
-            <T>Ta</T>
+            <exp>0.5</exp>
             <N>-1.5</N>
             <Ea>59500.0</Ea>
         </rate>
@@ -115,7 +115,7 @@
 
         <rate>
             <C units="cm^3/(mol-sec)">5.0e15</C>
-            <T>Ta</T>
+            <exp>0.5</exp>
             <N>0</N>
             <Ea>75500.0</Ea>
         </rate>
@@ -203,7 +203,7 @@
 
         <rate>
             <C units="cm^3/(mol-sec)">7.0e21</C>
-            <T>Ta</T>
+            <exp>0.5</exp>
             <N>-1.6</N>
             <Ea>113200.0</Ea>
         </rate>
@@ -292,7 +292,7 @@
 
         <rate>
             <C units="cm^3/(mol-sec)">6.4e17</C>
-            <T>Ta</T>
+            <exp>0.5</exp>
             <N>-1.0</N>
             <Ea>38400.0</Ea>
         </rate>
@@ -374,7 +374,7 @@
 
         <rate>
             <C units="cm^3/(mol-sec)">8.4e12</C>
-            <T>Ta</T>
+            <exp>0.5</exp>
             <N>0</N>
             <Ea>19400.0</Ea>
         </rate>

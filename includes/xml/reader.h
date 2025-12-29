@@ -81,7 +81,7 @@ void print_reaction_set_pretty(const ReactionSet& RS) {
         // Rate & equilibrium scalars
         std::cout << "Rate model params:\n";
         std::cout << "  C  = " << std::scientific << std::setprecision(6) << r.C
-                  << "   T = " << r.temp
+                  << "   Texp = " << r.Texp
                   << "   Ea = " << std::fixed << std::setprecision(3) << r.Ea
                   << "   N = " << std::setprecision(6) << r.N
                   << "\n";
@@ -358,7 +358,7 @@ void read_rates(std::string& rates_file, std::string species_data_file, Reaction
             R.C  = to_double(Cnode.text);
 
             // <T>Ta</T>
-            R.temp = require_child(rate, "T").text;   // string "Ta"
+            R.Texp = to_double(require_child(rate, "exp").text);
 
             // <N>-1.5</N>
             R.N  = to_double(require_child(rate, "N").text);

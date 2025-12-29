@@ -4,6 +4,16 @@
 #include "dataStructures.h"
 #include "../common/common.h"
 
+void E_scho(double& Ev, 
+            double& Tv, 
+            double& rho_s,
+            double& R_s,
+            double& theta_v) {
+
+    Ev = rho_s * R_s * theta_v / (exp(theta_v / Tv) - 1.0);
+}
+
+
 void initialize_energy(double& E_tot, 
                        double& E_vib, 
                        const ReactionSet& RS,
