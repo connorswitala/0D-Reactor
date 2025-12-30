@@ -11,7 +11,11 @@ inline void write_0D_header(
     std::ofstream out(filename, std::ios::out | std::ios::trunc);
     if (!out) throw std::runtime_error("Could not open " + filename);
 
-    out << "t,T_tr,T_v,rho,p";
+    out << "t,T_tr,T_v";
+    for (int i = 0; i < RS.n_species; ++i) {
+        out << ",Tv" << RS.species[i].name;
+    } 
+    out << ",Tv_tot,rho,p";
     for (const auto& nm : RS.species) out << ",X_" << nm.name;
     out << "\n";
 }   
@@ -20,6 +24,7 @@ inline void append_0D_row(
     const std::string& filename,
     double t,
     const double* Ts,        // Ts[0]=T_tr, Ts[1]=T_v
+    const double* Tvs,
     const double* X_s,
     const double& rho,
     const double& p,
@@ -28,7 +33,14 @@ inline void append_0D_row(
         std::ofstream out(filename, std::ios::out | std::ios::app);
         if (!out) throw std::runtime_error("Could not open " + filename + " for append");
 
-        out << t << "," << Ts[0] << "," << Ts[1] << "," << rho << "," << p;
+        double sum = 0.0;
+        out << t << "," << Ts[0] << "," << Ts[1];
+        for (int i = 0; i < n_species; ++i) {
+            out << "," << Tvs[i];
+            sum += Tvs[i];
+        } 
+        
+        out << "," << sum << "," << rho << "," << p;
         for (int i = 0; i < n_species; ++i) out << "," << X_s[i];
         out << "\n";
     }
@@ -46,6 +58,8 @@ int main() {
     std::vector<double> rho_s(rxns.n_species, 0.0);
     std::vector<double> Ys(rxns.n_species, 0.0);
     std::vector<double> Xs(rxns.n_species, 0.0);
+
+    std::vector<double> Tvs(rxns.n_species, 0.0);
 
     double Ts[3] = {15000.0, 300.0, 1000.0};   // T_tr, T_v, T_e
 
@@ -109,6 +123,16 @@ int main() {
         compute_rates(rates.data(), rxns, rho_s.data(), Ts, P);        
         landau_teller(Q, rxns, Ts, rho_s.data(), Ys, Xs, P);
 
+        double ev;
+        for (int i = 0; i < rxns.n_species; ++i) {
+            if (!rxns.species[i].mol)
+                continue;
+            Ev_sho(ev, Ts[1], rho_s[i], rxns.Rs[i], rxns.theta_vs[i]);
+            invert_Ev(Tvs[i], ev, rxns.Rs[i], rxns.theta_vs[i], rho_s[i]);
+        }
+
+
+
         for (int i = 0; i < rxns.n_species; ++i) {
             rho_s[i] += rates[i] * dt;
         }
@@ -123,7 +147,7 @@ int main() {
         mass_to_mole_frac(Xs.data(), Ys.data(), rxns.MWs.data(), rxns.n_species);
         
         if (counter % NWRITE == 0) {
-            append_0D_row(filename, t, Ts, Xs.data(), rho, P, rxns.n_species);
+            append_0D_row(filename, t, Ts, Tvs.data(), Xs.data(), rho, P, rxns.n_species);
         }
 
     }

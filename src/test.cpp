@@ -72,15 +72,6 @@ int main() {
             Ys[i] = 0.025; // Example density for N2        
     }
 
-    // for (int i = 0; i < rxns.n_species; ++i) {
-    //     if (rxns.species[i].name == "O2") 
-    //         Ys[i] = 0.233; // Example density for O2
-    //     else if (rxns.species[i].name == "N2") 
-    //         Ys[i] = 1.0; // Example density for N2
-    //     else
-    //         Ys[i] = 0.0; // Arbitrary small density
-    // }
-
     mixture_gas_constant(R_mix, Ys.data(), rxns.MWs.data(), rxns.n_species);
     rho = P / (R_mix * Ts[0]);
     for (int i = 0; i < rxns.n_species; ++i) {
@@ -93,45 +84,25 @@ int main() {
         rxns.Rs[i] = ugconn / rxns.MWs[i];
         rxns.species[i].ef = rxns.species[i].hf / rxns.MWs[i] - rxns.Rs[i] * 298.15; // convert to J/kg
     }
-
+    
     initialize_energy(E, Ev, rxns, rho_s.data(), Ts);
+    find_Ts(Ts, rxns, E, Ev, rho_s.data(), rho);
 
-    double t = 0.0;
-    double dt = 1e-11; // time step in seconds
+    std::cout << "Ev = " << Ev << std::endl;
+    std::cout << "Tv = " << Ts[1] << std::endl;
 
-    int NWRITE = 1000;
-    write_0D_header(filename, rxns);
 
-    int counter = 0;
-
-    while (t < 1.0e-6) {
-
-        mixture_gas_constant(R_mix, Ys.data(), rxns.MWs.data(), rxns.n_species);
-        total_density(rho, rho_s.data(), rxns.n_species);
-        find_Ts(Ts, rxns, E, Ev, rho_s.data(), rho);
-        compute_pressure(P, rho, R_mix, Ts[0]);
-        compute_rates(rates.data(), rxns, rho_s.data(), Ts, P);        
-        landau_teller(Q, rxns, Ts, rho_s.data(), Ys, Xs, P);
-
-        for (int i = 0; i < rxns.n_species; ++i) {
-            rho_s[i] += rates[i] * dt;
-        }
-
-        for (int i = 0; i < rxns.n_species; ++i) {
-            Ys[i] = rho_s[i] / rho;
-        }
-
-        Ev += Q * dt;
-        t += dt;     
-
-        mass_to_mole_frac(Xs.data(), Ys.data(), rxns.MWs.data(), rxns.n_species);
-        
-        if (counter % NWRITE == 0) {
-            append_0D_row(filename, t, Ts, Xs.data(), rho, P, rxns.n_species);
-        }
-
+    double ev;
+    double sum = 0.0;
+    for (int i = 0; i < rxns.n_species; ++i) {
+        if (!rxns.species[i].mol)
+            continue;
+        Ev_sho(ev, Ts[1], rho_s[i], rxns.Rs[i], rxns.theta_vs[i]);
+        std::cout << rxns.species[i].name << " Ev = " << ev << std::endl;
+        sum += ev;
     }
 
+    std::cout << "Sum = " << sum << std::endl;
     std::cout << "DONE" << std::endl;
     return 0;
 

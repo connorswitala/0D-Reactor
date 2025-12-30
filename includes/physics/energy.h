@@ -4,13 +4,23 @@
 #include "dataStructures.h"
 #include "../common/common.h"
 
-void E_scho(double& Ev, 
+void Ev_sho(double& Ev, 
             double& Tv, 
             double& rho_s,
             double& R_s,
             double& theta_v) {
 
     Ev = rho_s * R_s * theta_v / (exp(theta_v / Tv) - 1.0);
+}
+
+void invert_Ev(
+            double& Tv,
+            double& Ev,
+            double& R_s,
+            double& theta_v, 
+            double& rho_s) {
+
+    Tv = theta_v / (log(theta_v * R_s / Ev + 1));
 }
 
 

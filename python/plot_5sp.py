@@ -10,6 +10,10 @@ data = np.genfromtxt("../files/0Dreactor.csv", delimiter=",", names=True)
 t     = data["t"]
 T_tr  = data["T_tr"]
 T_v   = data["T_v"]
+Tv_N2 = data["TvN2"]
+Tv_O2 = data["TvO2"]
+Tv_NO = data["TvNO"]
+Tv_tot = data["Tv_tot"]
 
 X_N2  = data["X_N2"]
 X_N   = data["X_N"]
@@ -26,6 +30,11 @@ X_NO[X_NO <= 0] = np.nan
 plt.figure()
 plt.plot(t, T_tr, label="T_tr")
 plt.plot(t, T_v,  label="T_v")
+plt.plot(t, Tv_N2,  label="Tv_N2")
+plt.plot(t, Tv_O2,  label="Tv_O2")
+plt.plot(t, Tv_NO,  label="Tv_NO")
+plt.plot(t, Tv_tot,  label="Tv_tot")
+
 
 plt.xscale("log")
 plt.xlabel("Time [s]")
