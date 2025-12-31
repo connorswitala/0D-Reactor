@@ -20,7 +20,7 @@ void invert_Ev(
             double& theta_v, 
             double& rho_s) {
 
-    Tv = theta_v / (log(theta_v * R_s / Ev + 1));
+    Tv = theta_v / (log(theta_v * R_s * rho_s / Ev + 1));
 }
 
 

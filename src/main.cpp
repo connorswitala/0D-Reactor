@@ -15,7 +15,7 @@ inline void write_0D_header(
     for (int i = 0; i < RS.n_species; ++i) {
         out << ",Tv" << RS.species[i].name;
     } 
-    out << ",Tv_tot,rho,p";
+    out << ",Tv_tot,Ev,Ev_sum,Ev_sum1,rho,p";
     for (const auto& nm : RS.species) out << ",X_" << nm.name;
     out << "\n";
 }   
@@ -25,6 +25,7 @@ inline void append_0D_row(
     double t,
     const double* Ts,        // Ts[0]=T_tr, Ts[1]=T_v
     const double* Tvs,
+    const double* Evs,
     const double* X_s,
     const double& rho,
     const double& p,
@@ -40,7 +41,7 @@ inline void append_0D_row(
             sum += Tvs[i];
         } 
         
-        out << "," << sum << "," << rho << "," << p;
+        out << "," << sum << "," << Evs[0] << "," << Evs[1] << "," << Evs[2] << "," << rho << "," << p;
         for (int i = 0; i < n_species; ++i) out << "," << X_s[i];
         out << "\n";
     }
@@ -60,6 +61,7 @@ int main() {
     std::vector<double> Xs(rxns.n_species, 0.0);
 
     std::vector<double> Tvs(rxns.n_species, 0.0);
+    std::vector<double> Evs(3, 0.0);
 
     double Ts[3] = {15000.0, 300.0, 1000.0};   // T_tr, T_v, T_e
 
@@ -81,15 +83,6 @@ int main() {
         else
             Ys[i] = 0.0; // Arbitrary small density
     }
-
-    // for (int i = 0; i < rxns.n_species; ++i) {
-    //     if (rxns.species[i].name == "O2") 
-    //         Ys[i] = 0.233; // Example density for O2
-    //     else if (rxns.species[i].name == "N2") 
-    //         Ys[i] = 1.0; // Example density for N2
-    //     else
-    //         Ys[i] = 0.0; // Arbitrary small density
-    // }
 
     mixture_gas_constant(R_mix, Ys.data(), rxns.MWs.data(), rxns.n_species);
     rho = P / (R_mix * Ts[0]);
@@ -124,14 +117,22 @@ int main() {
         landau_teller(Q, rxns, Ts, rho_s.data(), Ys, Xs, P);
 
         double ev;
+        double sum = 0.0;
+        double sum1 = 0.0;
+
         for (int i = 0; i < rxns.n_species; ++i) {
             if (!rxns.species[i].mol)
                 continue;
             Ev_sho(ev, Ts[1], rho_s[i], rxns.Rs[i], rxns.theta_vs[i]);
+            sum += ev;
             invert_Ev(Tvs[i], ev, rxns.Rs[i], rxns.theta_vs[i], rho_s[i]);
+            Ev_sho(ev, Tvs[i], rho_s[i], rxns.Rs[i], rxns.theta_vs[i]);
+            sum1 += ev;
         }
 
-
+        Evs[0] = Ev;
+        Evs[1] = sum;
+        Evs[2] = sum1;
 
         for (int i = 0; i < rxns.n_species; ++i) {
             rho_s[i] += rates[i] * dt;
@@ -147,7 +148,7 @@ int main() {
         mass_to_mole_frac(Xs.data(), Ys.data(), rxns.MWs.data(), rxns.n_species);
         
         if (counter % NWRITE == 0) {
-            append_0D_row(filename, t, Ts, Tvs.data(), Xs.data(), rho, P, rxns.n_species);
+            append_0D_row(filename, t, Ts, Tvs.data(), Evs.data(), Xs.data(), rho, P, rxns.n_species);
         }
 
     }
