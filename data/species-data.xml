@@ -33,4 +33,24 @@
         <vibc1>1904.2</vibc1>
         <hf>91271.310</hf>
     </species>
+
+    <specices>
+        <name>N2+</name>
+        <Mw>0.028012851</MW>
+        <vibc1> </vibc1>
+        <hf>1509508.424</hf>
+    </species>
+
+    <species>
+        <name>O2+</name>
+        <MW>0.031998251</MW>
+        <vibc1> </vibc1>
+        <hf>1171828.436</hf>
+    </species>
+
+    <species>
+        <name>NO+</name>
+        <MW>0.030005551</MW>
+        <vibc1> </vibc1>
+        <hf>990809.704</hf>
 </species_data>
