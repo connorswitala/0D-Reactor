@@ -26,7 +26,7 @@
 
         <rate>
             <C units="cm^3/(mol-sec)">7.0e21</C>
-            <T>Ta</T>
+            <exp>0.5</exp>
             <N>-1.6</N>
             <Ea>113200.0</Ea>
         </rate>

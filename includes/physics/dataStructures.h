@@ -50,6 +50,7 @@ struct ReactionSet{
     std::vector<double> MWs;                // Molecular weights of species
     std::vector<double> Rs;                 // Specific gas constants of species
     std::vector<double> theta_vs;            // Characteristic vibrational temperatures of species
+    std::vector<double> efs;
     int n_reactions;                        // Number of reactions
     int n_species;                          // Number of species
 

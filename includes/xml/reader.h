@@ -198,6 +198,8 @@ void read_species_data(std::string& filename, std::vector<std::string> names, Re
         double theta_v;
         double vibc1;
         bool inlist;
+        double Rs;
+        double ef;
 
         // Enter <species> blocks
         for (const auto& ch : root.children) {
@@ -230,10 +232,16 @@ void read_species_data(std::string& filename, std::vector<std::string> names, Re
 
             sp.hf = to_double(require_child(ch, "hf").text);
 
+            Rs = ugconn / mw;
+            ef = sp.hf / mw - Rs * 298.15;
+
             // Add to species list
             RS.species.push_back(std::move(sp));
             RS.MWs.push_back(mw);
             RS.theta_vs.push_back(theta_v);
+            RS.Rs.push_back(Rs);
+            RS.efs.push_back(ef);
+            
         }
 
         RS.n_species = n_species;

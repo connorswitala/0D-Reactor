@@ -13,8 +13,7 @@ void mass_to_mole_frac(double* X,           // Mass fractions to be altered
         denom += Y[i] / MW[i];    
 
     for (int i = 0; i < NS; ++i) 
-        X[i] = (Y[i] / MW[i]) / denom;
-    
+        X[i] = (Y[i] / MW[i]) / denom;    
 }
 
 void mixture_gas_constant(double& R_mix,        // Mixture gas constant to be altered

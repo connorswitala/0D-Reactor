@@ -1,5 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import subprocess
+
+subprocess.run(["cmake", "--build", "."], cwd="../build", check=True)
+subprocess.run(["./../build/N2reactor.exe"], check=True)
 
 data = np.genfromtxt("../files/0Dreactor.csv", delimiter=",", names=True)
 

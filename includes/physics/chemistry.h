@@ -4,7 +4,18 @@
 #include "../xml/reader.h"
 #include "dataStructures.h"
 
-int find_nd_level(const std::vector<double>& Ns, double n) {
+/**
+ *      Functions:
+ *      
+ *      find_nd_level() - find number density level for Park Keq coefficients
+ *      
+ *      compute_rates() - compute chemical production rates
+ */
+
+
+int find_nd_level(const std::vector<double>& Ns, 
+                  double n) {
+
     const int N = (int)Ns.size();
     if (N < 2) return 0;
 
@@ -18,27 +29,29 @@ int find_nd_level(const std::vector<double>& Ns, double n) {
     return j;
 }
 
-void compute_rates(double* rates, // Production rates array
-    ReactionSet& RS, // Reaction set
-    double* rho_s,  // Species densities
-    double* Ts,     // Temperatures
-    double& P)      // Pressure
-    {
+
+void compute_rates(double* rates,   // Production rates array
+    ReactionSet& RS,                // Reaction set
+    double* rho_s,                  // Species densities
+    double* Ts,                     // Temperatures
+    double& P) {                    // Pressure in Pascals
+        
 
     // Molar concentration array
     std::vector<double> C(RS.n_species);
 
     // Compute concentrations
     for (int i = 0; i < RS.n_species; ++i) 
-        C[i] = rho_s[i] / (RS.MWs[i] * 1000.0); // mol/m^3
+        C[i] = (rho_s[i] / RS.MWs[i]) * 1e-6; // mol/cm^3
 
+    // Calculate rates from each reaction
     for (auto& r : RS.reactions) {
 
-        double T, gamma, n;
+        double T, gamma, n;     // Intermediate variables for computation
 
-        std::vector<double> A(r.Keq_N);
-        n = P/(boltzmann * Ts[0] * 1e6);    // Compute number density for curve fits !NEEDS CHANGE
-        int level = find_nd_level(r.Ns, n); // Find number density level
+        std::vector<double> A(r.Keq_N);         // Vector for linear interpolated Keq
+        n = P / (boltzmann * Ts[0]) * 1e-6;     // Compute number density for curve fits
+        int level = find_nd_level(r.Ns, n);     // Find number density level
  
         // Find Keq coefficients by linear interpolation
         for (int i = 0; i < r.Keq_N; ++i) {
@@ -49,7 +62,7 @@ void compute_rates(double* rates, // Production rates array
                 n);
         }
 
-        T = pow(Ts[0], r.Texp) * pow(Ts[1], (1.0 - r.Texp));
+        T = pow(Ts[0], r.Texp) * pow(Ts[1], (1.0 - r.Texp)); // Reaction temperature
 
         double exp_term = A[0] * (T / 10000.0)
                             + A[1]
@@ -59,9 +72,14 @@ void compute_rates(double* rates, // Production rates array
 
         double Keq = exp(exp_term); // Equilibrium constant
 
-        double R, f = 1.0, b = 1.0, nu;
-        gamma = r.C * pow(T, r.N) * exp(-r.Ea/T);
+        double R;           // Reaction rate without (nu_b - nu_f) in front
+        double f = 1.0;     // Forward part of reaction
+        double b = 1.0;     // Backward part of reaction
+        double nu;          // Stoichiometric coefficient
+
+        gamma = r.C * pow(T, r.N) * exp(-r.Ea/T); // Base forward reaction coefficient - k_f = cm^3 / [mol -s]
             
+        // Compute forward part
         for (int i = 0; i < RS.n_species; ++i) {
             nu = RS.nus_f[RS.n_species * r.id + i];
             if (nu == 0)
@@ -69,6 +87,7 @@ void compute_rates(double* rates, // Production rates array
             f *= pow(C[i], nu);
         }
 
+        // Compute backward part
         for (int i = 0; i < RS.n_species; ++i) {
             nu = RS.nus_b[RS.n_species * r.id + i];
             if (nu == 0)
@@ -76,6 +95,7 @@ void compute_rates(double* rates, // Production rates array
             b *= pow(C[i], nu);
         }
 
+        // Compute reaction rate depending on reaction type
         if (r.third_body) {
             double M_eff = 0.0;
             for (int i = 0; i < RS.n_species; ++i) {
@@ -85,21 +105,23 @@ void compute_rates(double* rates, // Production rates array
             R = gamma * M_eff * (f - b / Keq);
         }
         else {
-            R = gamma * (f - b / Keq);
+            R = gamma * (f - b / Keq); // mol / (cm^3 / s)
         }    
 
+        // Compute dXdt 
         for (int i = 0; i < RS.n_species; ++i) {
             int nu_f = RS.nus_f[RS.n_species * r.id + i];
             int nu_b = RS.nus_b[RS.n_species * r.id + i];
 
-            r.dXdt[i] = R * (nu_b - nu_f);
+            r.dXdt[i] = R * (nu_b - nu_f); // mol / (cm^3 / s)
         }
     }
 
+    // Add contributions from each reaction for total rate w_i
     for (int i = 0; i < RS.n_species; ++i) {
         rates[i] = 0.0;
         for (auto& r : RS.reactions) {
-            rates[i] += RS.MWs[i] * 1000 * r.dXdt[i];
+            rates[i] += RS.MWs[i] * r.dXdt[i] * 1e6;
         }
     }
 }

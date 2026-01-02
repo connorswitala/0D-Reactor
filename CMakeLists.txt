@@ -6,12 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(reactor
-    src/main.cpp
+    src/5species.cpp
     # More .cpp if necessary    
 )
 
-add_executable(test
-    src/test.cpp
+add_executable(N2reactor
+    src/2species.cpp
 )
 
 target_include_directories(reactor
