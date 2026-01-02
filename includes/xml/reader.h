@@ -265,13 +265,18 @@ void read_rates(std::string& rates_file, std::string species_data_file, Reaction
         std::string version = require_attr(root, "version");
         std::cout << "-- Chemistry version = " << version << "\n";
 
-        // Enter <reactions>
-        const xmlNode& rxns = require_child(root, "reactions");
-
         // Enter <species>
-        const xmlNode& species_names = require_child(rxns, "species");
+        const xmlNode& species = require_child(root, "species");
+
+        // Enter <num_species>
+        const xmlNode& nsp = require_child(species, "num_species");
+        RS.n_species = to_int(nsp.text);
+
+        // Enter <species_names>
+        const xmlNode& species_names = require_child(species, "species_names");
         std::vector<std::string> names;
 
+        // Get each name
         for (const auto& spnames : species_names.children) {
             if (spnames.name != "sp")
                 continue;
@@ -280,11 +285,14 @@ void read_rates(std::string& rates_file, std::string species_data_file, Reaction
             names.push_back(name);             
         }   
 
-        // Read in species data for species in this reaction set
+        // Read in species data from "species-data.xml" for species in this reaction set
         read_species_data(species_data_file, names, RS);
 
+        // Enter <reactions>
+        const xmlNode& rxns = require_child(root, "reactions");
+
         // Readnumber of reactions
-        const xmlNode& num = require_child(rxns, "number");
+        const xmlNode& num = require_child(rxns, "num_reactions");
         RS.n_reactions = to_int(num.text);
 
         // Allocate sized for stoichiometric coefficient arrays

@@ -1,9 +1,27 @@
 <chemistry version="11sp-park-90-rates">
   <reactions>
 
-    <number>
+    <num_species>
+    11
+    </num_species>
+
+    <species>
+        <sp name="N2"/>
+        <sp name="O2"/>
+        <sp name="NO"/>
+        <sp name="N"/>
+        <sp name="O"/>
+        <sp name="N2+"/>
+        <sp name="O2+"/>
+        <sp name="NO+"/>
+        <sp name="N+"/>
+        <sp name="O+"/>
+        <sp name="e-"/>
+    </species>
+
+    <num_reactions>
     5
-    </number>
+    </num_reactions>
 
     <reaction id="0" ionized="false">
 

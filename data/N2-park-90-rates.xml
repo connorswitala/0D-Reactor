@@ -1,99 +1,109 @@
 <chemistry version="N2-park-90-rates">
-  <reactions>
 
     <species>
-        <sp name="N2"/>
-        <sp name="N"/>
+
+        <num_species>
+        2
+        </num_species>
+
+        <species>
+            <sp name="N2"/>
+            <sp name="N"/>
+        </species>
+
     </species>
 
-    <number>
-    1
-    </number>
 
-    <reaction id="0" ionized="false">
+    <reactions>
 
-        <equation>
-        N2 + M = N + N + M
-        </equation>
+        <num_reactions>
+        1
+        </num_reactions>
 
-        <reactants>
-            <sp name="N2" nu="1"/>
-        </reactants>
+        <reaction id="0" ionized="false">
 
-        <products>
-            <sp name="N" nu="2"/>
-        </products>
+            <equation>
+            N2 + M = N + N + M
+            </equation>
 
-        <rate>
-            <C units="cm^3/(mol-sec)">7.0e21</C>
-            <exp>0.5</exp>
-            <N>-1.6</N>
-            <Ea>113200.0</Ea>
-        </rate>
+            <reactants>
+                <sp name="N2" nu="1"/>
+            </reactants>
 
-        <third-body>
-            <eff sp="N2" efficiency="1.0"/>
-            <eff sp="N" efficiency="4.2857"/>                   
-        </third-body>
+            <products>
+                <sp name="N" nu="2"/>
+            </products>
 
-        <equilibrium>
+            <rate>
+                <C units="cm^3/(mol-sec)">7.0e21</C>
+                <exp>0.5</exp>
+                <N>-1.6</N>
+                <Ea>113200.0</Ea>
+            </rate>
 
-            <Er units="J/mol">941818.4</Er>
+            <third-body>
+                <eff sp="N2" efficiency="1.0"/>
+                <eff sp="N" efficiency="4.2857"/>                   
+            </third-body>
 
-            <levels>6</levels>
-            <ncoeffs>5</ncoeffs>
+            <equilibrium>
 
-            <fit N="1e14">
-                <A1>3.490700</A1>
-                <A2>0.831330</A2>
-                <A3>4.097800</A3>
-                <A4>-12.728000</A4>
-                <A5>0.074870</A5>
-            </fit>
+                <Er units="J/mol">941818.4</Er>
 
-            <fit N="1e15">
-                <A1>2.072300</A1>
-                <A2>1.389700</A2>
-                <A3>2.061700</A3>
-                <A4>-11.828000</A4>
-                <A5>0.015105</A5>
-            </fit>
+                <levels>6</levels>
+                <ncoeffs>5</ncoeffs>
 
-            <fit N="1e16">
-                <A1>1.606000</A1>
-                <A2>1.573200</A2>
-                <A3>1.392300</A3>
-                <A4>-11.533000</A4>
-                <A5>-0.004543</A5>
-            </fit>
+                <fit N="1e14">
+                    <A1>3.490700</A1>
+                    <A2>0.831330</A2>
+                    <A3>4.097800</A3>
+                    <A4>-12.728000</A4>
+                    <A5>0.074870</A5>
+                </fit>
 
-            <fit N="1e17">
-                <A1>1.535100</A1>
-                <A2>1.606100</A2>
-                <A3>1.299300</A3>
-                <A4>-11.494000</A4>
-                <A5>-0.006980</A5>
-            </fit>
+                <fit N="1e15">
+                    <A1>2.072300</A1>
+                    <A2>1.389700</A2>
+                    <A3>2.061700</A3>
+                    <A4>-11.828000</A4>
+                    <A5>0.015105</A5>
+                </fit>
 
-            <fit N="1e18">
-                <A1>1.476600</A1>
-                <A2>1.629100</A2>
-                <A3>1.215300</A3>
-                <A4>-11.457000</A4>
-                <A5>-0.009444</A5>
-            </fit>
+                <fit N="1e16">
+                    <A1>1.606000</A1>
+                    <A2>1.573200</A2>
+                    <A3>1.392300</A3>
+                    <A4>-11.533000</A4>
+                    <A5>-0.004543</A5>
+                </fit>
 
-            <fit N="1e19">
-                <A1>1.476600</A1>
-                <A2>1.629100</A2>
-                <A3>1.215300</A3>
-                <A4>-11.457000</A4>
-                <A5>-0.009444</A5>
-            </fit>
+                <fit N="1e17">
+                    <A1>1.535100</A1>
+                    <A2>1.606100</A2>
+                    <A3>1.299300</A3>
+                    <A4>-11.494000</A4>
+                    <A5>-0.006980</A5>
+                </fit>
 
-        </equilibrium>
-    </reaction>
+                <fit N="1e18">
+                    <A1>1.476600</A1>
+                    <A2>1.629100</A2>
+                    <A3>1.215300</A3>
+                    <A4>-11.457000</A4>
+                    <A5>-0.009444</A5>
+                </fit>
+
+                <fit N="1e19">
+                    <A1>1.476600</A1>
+                    <A2>1.629100</A2>
+                    <A3>1.215300</A3>
+                    <A4>-11.457000</A4>
+                    <A5>-0.009444</A5>
+                </fit>
+
+            </equilibrium>
+        </reaction>
 
 
-  </reactions>
+    </reactions>
 </chemistry>
