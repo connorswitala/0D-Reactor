@@ -191,18 +191,15 @@ void landau_teller(double& Q,                       // Source term (to be calcul
         if (!RS.species[s].mol) 
             continue;
 
-        double deno = 0.0;
-        double num  = 0.0;
+        double sum = 0.0;
 
         for (int r = 0; r < RS.n_species; ++r) {           
 
-            int idx = s * RS.n_species + r;            
-
-            deno += Xs[r] / tau_sr[idx];
-            num  += Xs[r];
+            int idx = s * RS.n_species + r;
+            sum += Xs[r] / tau_sr[idx];
         }
 
-        tau_v[s] = num / deno;
+        tau_v[s] = 1.0 / sum;
     }
 
     // Q_VT = sum rho_i (e_v*(T) - e_v(Tv)) / tau_v,i

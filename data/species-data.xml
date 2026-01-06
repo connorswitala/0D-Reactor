@@ -34,23 +34,46 @@
         <hf>91271.310</hf>
     </species>
 
-    <specices>
+    <species>
         <name>N2+</name>
-        <Mw>0.028012851</MW>
-        <vibc1> </vibc1>
+        <MW>0.028012851</MW>
+        <vibc1>2207.0</vibc1>
         <hf>1509508.424</hf>
     </species>
 
     <species>
         <name>O2+</name>
         <MW>0.031998251</MW>
-        <vibc1> </vibc1>
+        <vibc1>1904.7</vibc1>
         <hf>1171828.436</hf>
     </species>
 
     <species>
         <name>NO+</name>
         <MW>0.030005551</MW>
-        <vibc1> </vibc1>
+        <vibc1>2376.42</vibc1>
         <hf>990809.704</hf>
+    </species>
+
+    <species>
+        <name>N+</name>
+        <MW>0.030005551</MW>
+        <vibc1>0.0</vibc1>
+        <hf>990809.704</hf>
+    </species>
+
+    <species>
+        <name>O+</name>
+        <MW>0.030005551</MW>
+        <vibc1>0.0</vibc1>
+        <hf>990809.704</hf>
+    </species>
+
+    <species>
+        <name>e-</name>
+        <MW>0.030005551</MW>
+        <vibc1>0.0</vibc1>
+        <hf>990809.704</hf>
+    </species>
+
 </species_data>
