@@ -1,0 +1,611 @@
+<chemistry version="11sp-park-90-rates">
+
+    <species>
+
+        <num_species>
+        11
+        </num_species>
+
+        <species_names>
+            <sp name="N2"/>
+            <sp name="O2"/>
+            <sp name="NO"/>
+            <sp name="N"/>
+            <sp name="O"/>
+            <sp name="N2+"/>
+            <sp name="O2+"/>
+            <sp name="NO+"/>
+            <sp name="N+"/>
+            <sp name="O+"/>
+            <sp name="e-"/>
+        </species_names>
+
+    </species>
+
+    <reactions>
+
+        <num_reactions>
+        5
+        </num_reactions>
+
+        <reaction id="0" ionized="false">
+
+            <equation>
+            O2 + M = O + O + M
+            </equation>
+
+            <reactants>
+                <sp name="O2" nu="1"/>
+            </reactants>
+
+            <products>
+                <sp name="O" nu="2"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">2.0e21</C>
+                <T>Ta</T>
+                <N>-1.5</N>
+                <Ea>59500.0</Ea>
+            </rate>
+
+            <third-body>
+                <eff sp="O2" efficiency="1.0"/>
+                <eff sp="NO" efficiency="1.0"/>
+                <eff sp="N2" efficiency="1.0"/>
+                <eff sp="O" efficiency="5.0"/>
+                <eff sp="N" efficiency="5.0"/>
+                <eff sp="N2+" efficiency="1.0"/>
+                <eff sp="O2+" efficiency="1.0"/>
+                <eff sp="NO+" efficiency="1.0"/>
+                <eff sp="N+" efficiency="5.0"/>
+                <eff sp="O+" efficiency="5.0"/>                  
+            </third-body>
+
+            <equilibrium>
+                <Er units="J/mol">494047.36</Er>
+
+                <levels>6</levels>
+                <ncoeffs>5</ncoeffs>
+
+                <fit N="1e14">
+                    <A1>1.810300</A1>
+                    <A2>1.960700</A2>
+                    <A3>3.571600</A3>
+                    <A4>-7.362300</A4>
+                    <A5>0.083861</A5>
+                </fit>
+
+                <fit N="1e15">
+                    <A1>0.913540</A1>
+                    <A2>2.316000</A2>
+                    <A3>2.288500</A3>
+                    <A4>-6.796900</A4>
+                    <A5>0.046338</A5>
+                </fit>
+
+                <fit N="1e16">
+                    <A1>0.641830</A1>
+                    <A2>2.425300</A2>
+                    <A3>1.902600</A3>
+                    <A4>-6.627700</A4>
+                    <A5>0.035151</A5>
+                </fit>
+
+                <fit N="1e17">
+                    <A1>0.553880</A1>
+                    <A2>2.460000</A2>
+                    <A3>1.776300</A3>
+                    <A4>-6.572000</A4>
+                    <A5>0.031445</A5>
+                </fit>
+
+                <fit N="1e18">
+                    <A1>0.524550</A1>
+                    <A2>2.471500</A2>
+                    <A3>1.734200</A3>
+                    <A4>-6.553400</A4>
+                    <A5>0.030209</A5>
+                </fit>
+
+                <fit N="1e19">
+                    <A1>0.509890</A1>
+                    <A2>2.477300</A2>
+                    <A3>1.713200</A3>
+                    <A4>-6.544100</A4>
+                    <A5>0.029591</A5>
+                </fit>
+            </equilibrium>
+        </reaction>
+
+        <reaction id="1" ionized="false">
+
+            <equation>
+            NO + M = N + O + M
+            </equation>
+
+            <reactants>
+                <sp name="NO" nu="1"/>
+            </reactants>
+
+            <products>
+                <sp name="N" nu="1"/>
+                <sp name="O" nu="1"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">5.0e15</C>
+                <T>Ta</T>
+                <N>0</N>
+                <Ea>75500.0</Ea>
+            </rate>
+
+            <third-body>
+                <eff sp="O2" efficiency="1.0"/>
+                <eff sp="NO" efficiency="22.0"/>
+                <eff sp="N2" efficiency="1.0"/>
+                <eff sp="O" efficiency="22.0"/>
+                <eff sp="N" efficiency="22.0"/>
+                <eff sp="O2+" efficiency="1.0"/>  
+                <eff sp="N2+" efficiency="1.0"/>  
+                <eff sp="NO+" efficiency="1.0"/>  
+                <eff sp="N+" efficiency="22.0"/>  
+                <eff sp="O+" efficiency="22.0"/>  
+            </third-body>
+
+            <equilibrium>
+
+                <Er units="J/mol">679816.32</Er>
+
+                <levels>6</levels>
+                <ncoeffs>5</ncoeffs>
+
+                <fit N="1e14">
+                    <A1>2.164900</A1>
+                    <A2>0.078577</A2>
+                    <A3>2.850800</A3>
+                    <A4>-8.542200</A4>
+                    <A5>0.053043</A5>
+                </fit>
+
+                <fit N="1e15">
+                    <A1>1.007200</A1>
+                    <A2>0.535450</A2>
+                    <A3>1.191100</A3>
+                    <A4>-7.809800</A4>
+                    <A5>0.004394</A5>
+                </fit>
+
+                <fit N="1e16">
+                    <A1>0.638170</A1>
+                    <A2>0.681890</A2>
+                    <A3>0.663360</A3>
+                    <A4>-7.577300</A4>
+                    <A5>-0.011025</A5>
+                </fit>
+
+                <fit N="1e17">
+                    <A1>0.558890</A1>
+                    <A2>0.715580</A2>
+                    <A3>0.553960</A3>
+                    <A4>-7.530400</A4>
+                    <A5>-0.014089</A5>
+                </fit>
+
+                <fit N="1e18">
+                    <A1>0.515000</A1>
+                    <A2>0.732860</A2>
+                    <A3>0.490960</A3>
+                    <A4>-7.502500</A4>
+                    <A5>-0.015938</A5>
+                </fit>
+
+                <fit N="1e19">
+                    <A1>0.507650</A1>
+                    <A2>0.735750</A2>
+                    <A3>0.480420</A3>
+                    <A4>-7.497900</A4>
+                    <A5>-0.016247</A5>
+                </fit>
+
+            </equilibrium>
+
+        </reaction>
+
+        <reaction id="2" ionized="false">
+
+            <equation>
+            N2 + M = N + N + M
+            </equation>
+
+            <reactants>
+                <sp name="N2" nu="1"/>
+            </reactants>
+
+            <products>
+                <sp name="N" nu="2"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">7.0e21</C>
+                <T>Ta</T>
+                <N>-1.6</N>
+                <Ea>113200.0</Ea>
+            </rate>
+
+            <third-body>
+                <eff sp="O2" efficiency="1.0"/>
+                <eff sp="NO" efficiency="1.0"/>
+                <eff sp="N2" efficiency="1.0"/>
+                <eff sp="O" efficiency="4.2857"/>
+                <eff sp="N" efficiency="4.2857"/>
+                <eff sp="O2+" efficiency="1.0"/>  
+                <eff sp="N2+" efficiency="1.0"/>  
+                <eff sp="NO+" efficiency="1.0"/>  
+                <eff sp="N+" efficiency="4.2857"/>  
+                <eff sp="O+" efficiency="4.2857"/>
+                <eff sp="e-" efficiency="1714.2857"/>  
+            </third-body>
+
+            <equilibrium>
+
+                <Er units="J/mol">941818.4</Er>
+
+                <levels>6</levels>
+                <ncoeffs>5</ncoeffs>
+
+                <fit N="1e14">
+                    <A1>3.490700</A1>
+                    <A2>0.831330</A2>
+                    <A3>4.097800</A3>
+                    <A4>-12.728000</A4>
+                    <A5>0.074870</A5>
+                </fit>
+
+                <fit N="1e15">
+                    <A1>2.072300</A1>
+                    <A2>1.389700</A2>
+                    <A3>2.061700</A3>
+                    <A4>-11.828000</A4>
+                    <A5>0.015105</A5>
+                </fit>
+
+                <fit N="1e16">
+                    <A1>1.606000</A1>
+                    <A2>1.573200</A2>
+                    <A3>1.392300</A3>
+                    <A4>-11.533000</A4>
+                    <A5>-0.004543</A5>
+                </fit>
+
+                <fit N="1e17">
+                    <A1>1.535100</A1>
+                    <A2>1.606100</A2>
+                    <A3>1.299300</A3>
+                    <A4>-11.494000</A4>
+                    <A5>-0.006980</A5>
+                </fit>
+
+                <fit N="1e18">
+                    <A1>1.476600</A1>
+                    <A2>1.629100</A2>
+                    <A3>1.215300</A3>
+                    <A4>-11.457000</A4>
+                    <A5>-0.009444</A5>
+                </fit>
+
+                <fit N="1e19">
+                    <A1>1.476600</A1>
+                    <A2>1.629100</A2>
+                    <A3>1.215300</A3>
+                    <A4>-11.457000</A4>
+                    <A5>-0.009444</A5>
+                </fit>
+
+            </equilibrium>
+        </reaction>
+
+        <reaction id="3" ionized="false">
+
+            <equation>
+            N2 + O = NO + N 
+            </equation>
+
+            <reactants>
+                <sp name="N2" nu="1"/>
+                <sp name="O" nu="1"/>
+            </reactants>
+
+            <products>
+                <sp name="NO" nu="1"/>
+                <sp name="N" nu="1"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">6.4e17</C>
+                <T>Ta</T>
+                <N>-1.0</N>
+                <Ea>38400.0</Ea>
+            </rate>
+
+            <equilibrium>
+
+                <Er units="J/mol">314594.96</Er>
+
+                <levels>6</levels>
+                <ncoeffs>5</ncoeffs>
+
+                <fit N="1e14">
+                    <A1>1.326100</A1>
+                    <A2>0.752680</A2>
+                    <A3>1.247400</A3>
+                    <A4>-4.185700</A4>
+                    <A5>0.021840</A5>
+                </fit>
+
+                <fit N="1e15">
+                    <A1>1.065300</A1>
+                    <A2>0.854170</A2>
+                    <A3>0.870930</A3>
+                    <A4>-4.018800</A4>
+                    <A5>0.010721</A5>
+                </fit>
+
+                <fit N="1e16">
+                    <A1>0.967940</A1>
+                    <A2>0.891310</A2>
+                    <A3>0.729100</A3>
+                    <A4>-3.955500</A4>
+                    <A5>0.006488</A5>
+                </fit>
+
+                <fit N="1e17">
+                    <A1>0.976460</A1>
+                    <A2>0.890430</A2>
+                    <A3>0.745720</A3>
+                    <A4>-3.964200</A4>
+                    <A5>0.007123</A5>
+                </fit>
+
+                <fit N="1e18">
+                    <A1>0.961880</A1>
+                    <A2>0.896170</A2>
+                    <A3>0.724790</A3>
+                    <A4>-3.955000</A4>
+                    <A5>0.006509</A5>
+                </fit>
+
+                <fit N="1e19">
+                    <A1>0.969210</A1>
+                    <A2>0.893290</A2>
+                    <A3>0.735310</A3>
+                    <A4>-3.959600</A4>
+                    <A5>0.006818</A5>
+                </fit>
+
+            </equilibrium>
+
+        </reaction>
+
+        <reaction id="4" ionized="false">
+
+            <equation>
+            NO + O = O2 + N 
+            </equation>
+
+            <reactants>
+                <sp name="NO" nu="1"/>
+                <sp name="O" nu="1"/>
+            </reactants>
+
+            <products>
+                <sp name="O2" nu="1"/>
+                <sp name="N" nu="1"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">8.4e12</C>
+                <T>Ta</T>
+                <N>0.0</N>
+                <Ea>19450.0</Ea>
+            </rate>
+
+            <equilibrium>
+
+                <Er units="J/mol">133176.72</Er>
+
+                <levels>6</levels>
+                <ncoeffs>5</ncoeffs>
+
+                <fit N="1e14">
+                    <A1>0.354380</A1>
+                    <A2>-1.882100</A2>
+                    <A3>-0.721110</A3>
+                    <A4>-1.179700</A4>
+                    <A5>-0.030831</A5>
+                </fit>
+
+                <fit N="1e15">
+                    <A1>0.093613</A1>
+                    <A2>-1.780600</A2>
+                    <A3>-1.097500</A3>
+                    <A4>-1.012800</A4>
+                    <A5>-0.041949</A5>
+                </fit>
+
+                <fit N="1e16">
+                    <A1>-0.003732</A1>
+                    <A2>-1.743400</A2>
+                    <A3>-1.239400</A3>
+                    <A4>-0.949520</A4>
+                    <A5>-0.046182</A5>
+                </fit>
+
+                <fit N="1e17">
+                    <A1>0.004815</A1>
+                    <A2>-1.744300</A2>
+                    <A3>-1.222700</A3>
+                    <A4>-0.958240</A4>
+                    <A5>-0.045545</A5>
+                </fit>
+
+                <fit N="1e18">
+                    <A1>-0.009758</A1>
+                    <A2>-1.738600</A2>
+                    <A3>-1.243600</A3>
+                    <A4>-0.949000</A4>
+                    <A5>-0.046159</A5>
+                </fit>
+
+                <fit N="1e19">
+                    <A1>-0.002428</A1>
+                    <A2>-1.741500</A2>
+                    <A3>-1.233100</A3>
+                    <A4>-0.953650</A4>
+                    <A5>-0.045850</A5>
+                </fit>
+
+            </equilibrium>
+
+
+
+        </reaction>
+
+        <reaction id="5" ionized="true">
+
+            <equation>
+            N + O = NO+ + e-
+            </equation>
+
+            <reactants>
+                <sp name="N" nu="1"/>
+                <sp name="O" nu="1"/>
+            <reactants>
+
+            <products>
+                <sp name="NO+" nu="1"/>
+                <sp name="e-" nu="1"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">8.80e8</C>
+                <T>Ta</T>
+                <N>1.0</N>
+                <Ea>31900</Ea>
+            </rate>
+
+            <equilibrium>
+
+            </equilibrium>
+
+        </reaction>
+
+        <reaction id="6" ionized="true">
+
+            <equation>
+            N + N = N2+ + e-
+            </equation>
+
+            <reactants>
+                <sp name="N" nu="2"/>
+            </reactants>
+
+            <products>
+                <sp name="N2+" nu="1"/>
+                <sp name="e-" nu="1"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">4.40e7</C>
+                <T>Ta</T>
+                <N>1.50</N>
+                <Ea>67500</Ea>
+            </rate>
+
+            <equilibrium>
+
+            </equilibrium>
+        </reaction>
+
+        <reaction id="7" ionized="true">
+
+            <equation>
+            O + O = O2+ + e-
+            </equation>
+
+            <reactants>
+                <sp name="O" nu="2"/>
+            </reactants>
+
+            <products>
+                <sp name="O2+" nu="1"/>
+                <sp name="e-" nu="1"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">7.10e2</C>
+                <T>Ta</T>
+                <N>2.70</N>
+                <Ea>80600.0</Ea>
+            </rate>
+
+            <equilibrium>
+
+            </equilibrium>
+
+        </reaction>
+
+        <reaction id="8" ionized="true">
+
+            <equation>
+            O + NO+ = O2 + N+
+            </equation>
+
+            <reactants>
+                <sp name="O" nu="1"/>
+                <sp name="NO+" nu="1"/>
+            </reactants>
+
+            <products>
+                <sp name="O2" nu="1"/>
+                <sp name="N+" nu="1"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">1.00e12</C>
+                <T>T</T>
+                <N>0.5</N>
+                <Ea>77200.0</Ea>
+            </rate>
+
+            <equilibrium>
+
+            </equilibrium>
+
+        </reaction>
+
+        <reaction id="9" ionized="true">
+
+            <equation>
+            N2 + N+ = N + N2+
+            </equation>
+
+            <reactants>
+                <sp name="N2" nu="1"/>
+                <sp name="N+" nu="1"/>
+            </reactants>
+
+            <products>
+                <sp name="N" nu="1"/>
+                <sp name="N2+" nu="1"/>
+            </products>
+
+            <rate>
+                <C units="cm^3/(mol-sec)">1.00e12<C>
+                <T>
+
+        </reaction>
+
+
+    </reactions>
+</chemistry>

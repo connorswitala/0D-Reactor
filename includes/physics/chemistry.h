@@ -62,7 +62,15 @@ void compute_rates(double* rates,   // Production rates array
                 n);
         }
 
-        T = pow(Ts[0], r.Texp) * pow(Ts[1], (1.0 - r.Texp)); // Reaction temperature
+        // Get rate controolling temperature
+        if (r.temp == "Ta") {
+            T = sqrt(Ts[0] * Ts[1]);
+        } else if (r.temp == "Te") {
+            T = Ts[2];
+        }
+        else {
+            T = Ts[0];
+        }        
 
         double exp_term = A[0] * (T / 10000.0)
                             + A[1]

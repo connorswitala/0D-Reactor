@@ -20,12 +20,10 @@ struct Reaction{
     double C;                               // Leading coefficient
     double Ea;                              // Activation energy
     double N;                               // Temperature exponent
-    double Texp;                       // Reaction temperature
+    std::string temp;                       // Rate-controlling temperature
 
     int id;                                 // Reaction ID
     std::string equation;                   // Equation 
-
-    std::vector<int> sp_in_rxn;            // Flags for species
 
     std::vector<std::string> reactants;     // Reactants in reaction
     std::vector<std::string> products;      // Products in reaction

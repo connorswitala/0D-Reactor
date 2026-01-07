@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 import subprocess
 
 subprocess.run(["cmake", "--build", "."], cwd="../build", check=True)
-subprocess.run(["./../build/reactor.exe"], check=True)
+subprocess.run(["./../build/reactor"], check=True)
 
-data = np.genfromtxt("../files/0Dreactor.csv", delimiter=",", names=True)
+data = np.genfromtxt("../files/0DReactor.csv", delimiter=",", names=True)
 
 t     = data["t"]
 T_tr  = data["T_tr"]
